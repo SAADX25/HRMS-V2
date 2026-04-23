@@ -1,4 +1,4 @@
-﻿using Application.Mappings;
+using Application.Mappings;
 using Application.Services.Implementations;
 using Application.Services.Interfaces;
 using Domain.Interfaces;
@@ -20,7 +20,7 @@ public static class DependencyInjection
     {
         // Database
         services.AddDbContext<AppDbContext>(options =>
-            options.UseNpgsql(
+            options.UseSqlServer(
                 configuration.GetConnectionString("DefaultConnection")));
 
         // Repositories
@@ -40,6 +40,8 @@ public static class DependencyInjection
 
         // Services
         services.AddScoped<IEmployeeService, EmployeeService>();
+        services.AddScoped<IDepartmentService, DepartmentService>();
+        services.AddScoped<ILeaveRequestService, LeaveRequestService>();
 
         return services;
     }

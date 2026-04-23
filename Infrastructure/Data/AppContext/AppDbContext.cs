@@ -1,4 +1,4 @@
-﻿using Domain.Entities;
+using Domain.Entities;
 using Domain.Enums;
 using Microsoft.EntityFrameworkCore;
 
@@ -66,14 +66,16 @@ public class AppDbContext : DbContext
             .HasForeignKey(s => s.EmployeeId)
             .OnDelete(DeleteBehavior.Restrict);
 
-        // Seed Admin User
+        // Seed Admin User (password: Admin123 — BCrypt hashed)
         modelBuilder.Entity<User>().HasData(new User
         {
             Id = 1,
-            Username = "Abood",
-            Email = "Admin123@Gmail.com",
-            PasswordHash = "Admin123",
-            Role = "Admin"
+            Username = "Admin",
+            Email = "admin@hrms.com",
+            PasswordHash = "$2a$11$O.9DIugPslp58G6RhlLZEOvxbB1D5uzan5wOahBWfghmfBRKJmJDG",
+            Role = "Admin",
+            CreatedAt = new DateTime(2026, 1, 1, 0, 0, 0, DateTimeKind.Utc),
+            IsActive = true
         });
     }
 }

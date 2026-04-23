@@ -1,4 +1,4 @@
-﻿namespace Domain.Entities;
+namespace Domain.Entities;
 
 public class User
 {
@@ -9,6 +9,6 @@ public class User
     public string Role { get; set; } = "Employee"; 
     public int? EmployeeId { get; set; }          
     public Employee? Employee { get; set; }
-    public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
+    public DateTime CreatedAt { get; set; }
     public bool IsActive { get; set; } = true;
 }

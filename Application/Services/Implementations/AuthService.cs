@@ -1,4 +1,4 @@
-﻿using Application.DTOs.Auth;
+using Application.DTOs.Auth;
 using Application.Interfaces;
 using BCrypt.Net;
 using Domain.Entities;
@@ -45,7 +45,8 @@ namespace Application.Services.Implementations
                 Email = dto.Email,
                 PasswordHash = BCrypt.Net.BCrypt.HashPassword(dto.Password),
                 Role = dto.Role.ToString(),
-                EmployeeId = dto.EmployeeId
+                EmployeeId = dto.EmployeeId,
+                CreatedAt = DateTime.UtcNow
             };
 
             await uow.Repository<User>().AddAsync(user);

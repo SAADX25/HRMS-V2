@@ -1,13 +1,12 @@
 ﻿using System;
 using Microsoft.EntityFrameworkCore.Migrations;
-using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
 #nullable disable
-// linq => query lang => C#
+
 namespace Infrastructure.Migrations
 {
     /// <inheritdoc />
-    public partial class firstDesgin : Migration
+    public partial class InitialCreate_SqlServer : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -16,26 +15,29 @@ namespace Infrastructure.Migrations
                 name: "Departments",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "integer", nullable: false)
-                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
-                    Name = table.Column<string>(type: "text", nullable: false),
-                    Location = table.Column<string>(type: "text", nullable: false)
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Name = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Location = table.Column<string>(type: "nvarchar(max)", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Departments", x => x.Id); 
+                    table.PrimaryKey("PK_Departments", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
                 name: "Users",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "integer", nullable: false)
-                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
-                    Username = table.Column<string>(type: "text", nullable: false),
-                    Email = table.Column<string>(type: "text", nullable: false),
-                    PasswordHash = table.Column<string>(type: "text", nullable: false),
-                    Role = table.Column<int>(type: "integer", nullable: false)
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Email = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    PasswordHash = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Username = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Role = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    EmployeeId = table.Column<int>(type: "int", nullable: true),
+                    CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    IsActive = table.Column<bool>(type: "bit", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -46,12 +48,12 @@ namespace Infrastructure.Migrations
                 name: "Positions",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "integer", nullable: false)
-                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
-                    Title = table.Column<string>(type: "text", nullable: false),
-                    SalaryMin = table.Column<decimal>(type: "numeric", nullable: false),
-                    SalaryMax = table.Column<decimal>(type: "numeric", nullable: false),
-                    DepartmentId = table.Column<int>(type: "integer", nullable: false)
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Title = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    SalaryMin = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
+                    SalaryMax = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
+                    DepartmentId = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -68,17 +70,17 @@ namespace Infrastructure.Migrations
                 name: "Employees",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "integer", nullable: false)
-                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
-                    FirstName = table.Column<string>(type: "text", nullable: false),
-                    LastName = table.Column<string>(type: "text", nullable: false),
-                    Email = table.Column<string>(type: "text", nullable: false),
-                    PhoneNumber = table.Column<string>(type: "text", nullable: false),
-                    HireDate = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
-                    IsActive = table.Column<bool>(type: "boolean", nullable: false),
-                    DepartmentId = table.Column<int>(type: "integer", nullable: false),
-                    UserId = table.Column<int>(type: "integer", nullable: false),
-                    PositionId = table.Column<int>(type: "integer", nullable: true)
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    FirstName = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    LastName = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Email = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    PhoneNumber = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    HireDate = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    IsActive = table.Column<bool>(type: "bit", nullable: false),
+                    DepartmentId = table.Column<int>(type: "int", nullable: false),
+                    UserId = table.Column<int>(type: "int", nullable: false),
+                    PositionId = table.Column<int>(type: "int", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -106,12 +108,12 @@ namespace Infrastructure.Migrations
                 name: "Attendances",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "integer", nullable: false)
-                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
-                    Date = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
-                    ClockIn = table.Column<TimeOnly>(type: "time without time zone", nullable: false),
-                    ClockOut = table.Column<TimeOnly>(type: "time without time zone", nullable: true),
-                    EmployeeId = table.Column<int>(type: "integer", nullable: false)
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Date = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    ClockIn = table.Column<TimeOnly>(type: "time", nullable: false),
+                    ClockOut = table.Column<TimeOnly>(type: "time", nullable: true),
+                    EmployeeId = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -128,15 +130,15 @@ namespace Infrastructure.Migrations
                 name: "LeaveRequests",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "integer", nullable: false)
-                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
-                    LeaveType = table.Column<int>(type: "integer", nullable: false),
-                    Status = table.Column<int>(type: "integer", nullable: false),
-                    StartDate = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
-                    EndDate = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
-                    RejectionReason = table.Column<string>(type: "text", nullable: true),
-                    EmployeeId = table.Column<int>(type: "integer", nullable: false),
-                    ApprovedBy = table.Column<int>(type: "integer", nullable: true)
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    LeaveType = table.Column<int>(type: "int", nullable: false),
+                    Status = table.Column<int>(type: "int", nullable: false),
+                    StartDate = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    EndDate = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    RejectionReason = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    EmployeeId = table.Column<int>(type: "int", nullable: false),
+                    ApprovedBy = table.Column<int>(type: "int", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -159,17 +161,17 @@ namespace Infrastructure.Migrations
                 name: "Salaries",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "integer", nullable: false)
-                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
-                    BaseAmount = table.Column<decimal>(type: "numeric", nullable: false),
-                    Allowances = table.Column<decimal>(type: "numeric", nullable: false),
-                    Deductions = table.Column<decimal>(type: "numeric", nullable: false),
-                    GrossAmount = table.Column<decimal>(type: "numeric", nullable: false),
-                    NetAmount = table.Column<decimal>(type: "numeric", nullable: false),
-                    Month = table.Column<int>(type: "integer", nullable: false),
-                    Year = table.Column<int>(type: "integer", nullable: false),
-                    EffectiveDate = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
-                    EmployeeId = table.Column<int>(type: "integer", nullable: false)
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    BaseAmount = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
+                    Allowances = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
+                    Deductions = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
+                    GrossAmount = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
+                    NetAmount = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
+                    Month = table.Column<int>(type: "int", nullable: false),
+                    Year = table.Column<int>(type: "int", nullable: false),
+                    EffectiveDate = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    EmployeeId = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -184,8 +186,8 @@ namespace Infrastructure.Migrations
 
             migrationBuilder.InsertData(
                 table: "Users",
-                columns: new[] { "Id", "Email", "PasswordHash", "Role", "Username" },
-                values: new object[] { 1, "Admin123@Gmail.com", "Admin123", 0, "Abood" });
+                columns: new[] { "Id", "CreatedAt", "Email", "EmployeeId", "IsActive", "PasswordHash", "Role", "Username" },
+                values: new object[] { 1, new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc), "admin@hrms.com", null, true, "$2a$11$O.9DIugPslp58G6RhlLZEOvxbB1D5uzan5wOahBWfghmfBRKJmJDG", "Admin", "Admin" });
 
             migrationBuilder.CreateIndex(
                 name: "IX_Attendances_EmployeeId",

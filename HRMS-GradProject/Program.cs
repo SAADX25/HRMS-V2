@@ -5,13 +5,37 @@ using Infrastructure;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
+using System.Text.Json.Serialization;
+using Microsoft.OpenApi.Models;
+using Microsoft.OpenApi.Any;
+using Swashbuckle.AspNetCore.SwaggerGen;
+using Application.DTOs.Auth;
 
 
 var builder = WebApplication.CreateBuilder(args);
 
+// CORS: allow Angular dev server
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowAngularDev", policy =>
+        policy.SetIsOriginAllowed(origin => true) // Allow any localhost port or URL for dev
+              .AllowAnyHeader()
+              .AllowAnyMethod()
+              .AllowCredentials());
+});
+
 builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
-builder.Services.AddControllers();
+builder.Services.AddSwaggerGen(c =>
+{
+    c.SchemaFilter<RegisterDtoSchemaFilter>();
+});
+
+builder.Services.AddControllers()
+    .AddJsonOptions(options =>
+    {
+        // This makes JSON serialization handle Enums as strings (e.g. "Admin") instead of numbers
+        options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
+    });
 
 // Auhentication and Authorization
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
@@ -46,9 +70,28 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
+app.UseCors("AllowAngularDev");
 app.UseHttpsRedirection();
 app.UseAuthentication();
 app.UseAuthorization();
 app.MapControllers();
 
 app.Run();
+
+public class RegisterDtoSchemaFilter : ISchemaFilter
+{
+    public void Apply(OpenApiSchema schema, SchemaFilterContext context)
+    {
+        if (context.Type == typeof(RegisterDto))
+        {
+            schema.Example = new OpenApiObject
+            {
+                ["username"] = new OpenApiString("saad"),
+                ["email"] = new OpenApiString("saadalrabadi2@gmail.com"),
+                ["password"] = new OpenApiString("Password123!"),
+                ["role"] = new OpenApiString("Employee"), 
+                ["employeeId"] = new OpenApiNull()
+            };
+        }
+    }
+}

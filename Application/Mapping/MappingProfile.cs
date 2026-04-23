@@ -1,10 +1,12 @@
-﻿// Aother : Abedalqader Alfaqeeh
+// Aother : Abedalqader Alfaqeeh
 // last Edit : 2026-04-12
 // </sammer> the MappingProfile class defines how to map between domain entities and data transfer objects (DTOs) using AutoMapper.
 // It includes mappings for the Employee entity, allowing for both retrieval (mapping to EmployeeDto) and creation/update (mapping from CreateEmployeeDto and UpdateEmployeeDto).
 // The update mapping is configured to ignore null values, enabling partial updates without overwriting existing data with nulls.
 
 using Application.DTOs.Employee;
+using Application.DTOs.Departments;
+using Application.DTOs.LeaveRequests;
 using AutoMapper;
 using Domain.Entities;
 
@@ -42,9 +44,15 @@ public class MappingProfile : Profile
 
 
 
+        // Department Mappings
+        CreateMap<Department, DepartmentDto>();
+        CreateMap<CreateDepartmentDto, Department>();
+        CreateMap<UpdateDepartmentDto, Department>()
+            .ForAllMembers(opt => opt.Condition(
+                (src, dest, srcMember) => srcMember != null));
 
-
-
-
+        // LeaveRequest Mappings
+        CreateMap<LeaveRequest, LeaveRequestDto>();
+        CreateMap<CreateLeaveRequestDto, LeaveRequest>();
     }
 }

@@ -1,0 +1,188 @@
+<div class="page-header">
+  <div class="header-content">
+    <h2>Leave Requests</h2>
+    <p>Review and manage employee time off</p>
+  </div>
+  <button class="btn-primary" (click)="onAdd()">
+    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <line x1="12" y1="5" x2="12" y2="19"></line>
+      <line x1="5" y1="12" x2="19" y2="12"></line>
+    </svg>
+    New Leave Request
+  </button>
+</div>
+
+@if (errorMessage()) {
+  <div class="alert alert-error">
+    {{ errorMessage() }}
+  </div>
+}
+
+<div class="card">
+  @if (isLoading()) {
+    <div class="loading-state">
+      <div class="spinner"></div>
+      <p>Loading leave requests...</p>
+    </div>
+  } @else if (leaveRequests().length === 0) {
+    <div class="empty-state">
+      <div class="empty-icon">
+        <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+          <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+          <line x1="16" y1="2" x2="16" y2="6"></line>
+          <line x1="8" y1="2" x2="8" y2="6"></line>
+          <line x1="3" y1="10" x2="21" y2="10"></line>
+        </svg>
+      </div>
+      <h3>No Leave Requests Found</h3>
+      <p>There are currently no leave requests in the system.</p>
+    </div>
+  } @else {
+    <div class="table-container">
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>Employee</th>
+            <th>Leave Type</th>
+            <th>Duration</th>
+            <th>Status</th>
+            <th class="text-right">Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (req of leaveRequests(); track req.id) {
+            <tr>
+              <td><span class="badge id-badge">#{{ req.id }}</span></td>
+              <td>
+                <div class="cell-user">
+                  <div class="avatar-sm">{{ getEmployeeName(req.employeeId).charAt(0) }}</div>
+                  <div class="user-details">
+                    <span class="user-name">{{ getEmployeeName(req.employeeId) }}</span>
+                    <span class="user-meta">ID: {{ req.employeeId }}</span>
+                  </div>
+                </div>
+              </td>
+              <td>
+                <span class="leave-type">{{ getLeaveTypeName(req.leaveType) }}</span>
+              </td>
+              <td>
+                <div class="duration-cell">
+                  <div class="date-range">
+                    <span>{{ req.startDate | date:'shortDate' }}</span>
+                    <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                      <line x1="5" y1="12" x2="19" y2="12"></line>
+                      <polyline points="12 5 19 12 12 19"></polyline>
+                    </svg>
+                    <span>{{ req.endDate | date:'shortDate' }}</span>
+                  </div>
+                </div>
+              </td>
+              <td>
+                <span class="badge" 
+                      [class.badge-pending]="req.status === LeaveStatus.Pending" 
+                      [class.badge-approved]="req.status === LeaveStatus.Approved"
+                      [class.badge-rejected]="req.status === LeaveStatus.Rejected">
+                  {{ req.status === LeaveStatus.Pending ? 'Pending' : (req.status === LeaveStatus.Approved ? 'Approved' : 'Rejected') }}
+                </span>
+              </td>
+              <td class="text-right">
+                <div class="actions-group">
+                  @if (req.status === LeaveStatus.Pending) {
+                    <button class="btn-icon success" title="Approve" (click)="onApprove(req.id)">
+                      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <polyline points="20 6 9 17 4 12"></polyline>
+                      </svg>
+                    </button>
+                    <button class="btn-icon danger" title="Reject" (click)="onReject(req.id)">
+                      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <line x1="18" y1="6" x2="6" y2="18"></line>
+                        <line x1="6" y1="6" x2="18" y2="18"></line>
+                      </svg>
+                    </button>
+                  } @else {
+                    <span class="action-done">Resolved</span>
+                  }
+                </div>
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+  }
+</div>
+
+<!-- Modal Overlay -->
+@if (isModalOpen()) {
+  <div class="modal-overlay" (click)="closeModal()">
+    <div class="modal-container" (click)="$event.stopPropagation()">
+      <div class="modal-header">
+        <h3>New Leave Request</h3>
+        <button class="close-btn" (click)="closeModal()">
+          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <line x1="18" y1="6" x2="6" y2="18"></line>
+            <line x1="6" y1="6" x2="18" y2="18"></line>
+          </svg>
+        </button>
+      </div>
+
+      <form [formGroup]="requestForm" (ngSubmit)="onSubmit()">
+        <div class="modal-body">
+          <div class="form-group">
+            <label>Employee</label>
+            <select class="form-control" formControlName="employeeId" [class.has-error]="isFieldInvalid('employeeId')">
+              <option value="" disabled selected>Select an employee...</option>
+              @for (emp of employees(); track emp.id) {
+                <option [value]="emp.id">{{ emp.fullName || emp.firstName + ' ' + emp.lastName }} (ID: {{ emp.id }})</option>
+              }
+            </select>
+            @if (isFieldInvalid('employeeId')) {
+              <span class="error-message">Employee selection is required.</span>
+            }
+          </div>
+          
+          <div class="form-group">
+            <label>Leave Type</label>
+            <select class="form-control" formControlName="leaveType" [class.has-error]="isFieldInvalid('leaveType')">
+              <option value="" disabled selected>Select leave type...</option>
+              <option [value]="LeaveType.Annual">Annual</option>
+              <option [value]="LeaveType.Sick">Sick</option>
+              <option [value]="LeaveType.Unpaid">Unpaid</option>
+            </select>
+            @if (isFieldInvalid('leaveType')) {
+              <span class="error-message">Leave type is required.</span>
+            }
+          </div>
+
+          <div class="form-row">
+            <div class="form-group">
+              <label>Start Date</label>
+              <input type="date" class="form-control" formControlName="startDate" [class.has-error]="isFieldInvalid('startDate')">
+              @if (isFieldInvalid('startDate')) {
+                <span class="error-message">Start date is required.</span>
+              }
+            </div>
+            <div class="form-group">
+              <label>End Date</label>
+              <input type="date" class="form-control" formControlName="endDate" [class.has-error]="isFieldInvalid('endDate')">
+              @if (isFieldInvalid('endDate')) {
+                <span class="error-message">End date is required.</span>
+              }
+            </div>
+          </div>
+        </div>
+
+        <div class="modal-footer">
+          <button type="button" class="btn-secondary" (click)="closeModal()">Cancel</button>
+          <button type="submit" class="btn-primary" [disabled]="isSubmitting()">
+            @if (isSubmitting()) {
+              <span class="btn-spinner"></span>
+            }
+            Submit Request
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+}

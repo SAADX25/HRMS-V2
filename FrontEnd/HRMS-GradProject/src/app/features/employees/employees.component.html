@@ -1,0 +1,202 @@
+<div class="page-header">
+  <div class="header-content">
+    <h2>Employees Management</h2>
+    <p>Manage your organization's staff members</p>
+  </div>
+  <button class="btn-primary" (click)="onAdd()">
+    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <line x1="12" y1="5" x2="12" y2="19"></line>
+      <line x1="5" y1="12" x2="19" y2="12"></line>
+    </svg>
+    Add New Employee
+  </button>
+</div>
+
+@if (errorMessage()) {
+  <div class="alert alert-error">
+    {{ errorMessage() }}
+  </div>
+}
+
+<div class="card">
+  @if (isLoading()) {
+    <div class="loading-state">
+      <div class="spinner"></div>
+      <p>Loading employees...</p>
+    </div>
+  } @else if (employees().length === 0) {
+    <div class="empty-state">
+      <div class="empty-icon">
+        <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+          <circle cx="9" cy="7" r="4"></circle>
+          <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
+          <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
+        </svg>
+      </div>
+      <h3>No Employees Found</h3>
+      <p>Get started by adding a new employee to the system.</p>
+    </div>
+  } @else {
+    <div class="table-container">
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>Employee</th>
+            <th>Contact</th>
+            <th>Department</th>
+            <th>Status</th>
+            <th class="text-right">Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (employee of employees(); track employee.id) {
+            <tr>
+              <td>#{{ employee.id }}</td>
+              <td>
+                <div class="cell-user">
+                  <div class="avatar-sm">{{ employee.firstName.charAt(0) }}{{ employee.lastName.charAt(0) }}</div>
+                  <div class="user-details">
+                    <span class="user-name">{{ employee.fullName || employee.firstName + ' ' + employee.lastName }}</span>
+                    <span class="user-meta">Hired: {{ employee.hireDate | date:'mediumDate' }}</span>
+                  </div>
+                </div>
+              </td>
+              <td>
+                <div class="cell-contact">
+                  <span>{{ employee.email }}</span>
+                  <span class="phone">{{ employee.phoneNumber }}</span>
+                </div>
+              </td>
+              <td>
+                <span class="badge department-badge">{{ employee.departmentName || 'N/A' }}</span>
+              </td>
+              <td>
+                <span class="badge" [class.badge-active]="employee.isActive" [class.badge-inactive]="!employee.isActive">
+                  {{ employee.isActive ? 'Active' : 'Inactive' }}
+                </span>
+              </td>
+              <td class="text-right">
+                <div class="actions-group">
+                  <button class="btn-icon" title="Edit" (click)="onEdit(employee.id)">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                      <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
+                      <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
+                    </svg>
+                  </button>
+                  <button class="btn-icon danger" title="Delete" (click)="onDelete(employee.id)">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                      <polyline points="3 6 5 6 21 6"></polyline>
+                      <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+                      <line x1="10" y1="11" x2="10" y2="17"></line>
+                      <line x1="14" y1="11" x2="14" y2="17"></line>
+                    </svg>
+                  </button>
+                </div>
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+  }
+</div>
+
+<!-- Modal Overlay -->
+@if (isModalOpen()) {
+  <div class="modal-overlay" (click)="closeModal()">
+    <!-- Modal Container (stop propagation so clicking inside doesn't close) -->
+    <div class="modal-container" (click)="$event.stopPropagation()">
+      <div class="modal-header">
+        <h3>{{ isEditMode() ? 'Edit Employee' : 'Add New Employee' }}</h3>
+        <button class="close-btn" (click)="closeModal()">
+          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <line x1="18" y1="6" x2="6" y2="18"></line>
+            <line x1="6" y1="6" x2="18" y2="18"></line>
+          </svg>
+        </button>
+      </div>
+
+      <form [formGroup]="employeeForm" (ngSubmit)="onSubmit()">
+        <div class="modal-body">
+          <div class="form-row">
+            <div class="form-group">
+              <label>First Name</label>
+              <input type="text" class="form-control" formControlName="firstName" [class.has-error]="isFieldInvalid('firstName')" placeholder="John">
+              @if (isFieldInvalid('firstName')) {
+                <span class="error-message">First name is required.</span>
+              }
+            </div>
+            <div class="form-group">
+              <label>Last Name</label>
+              <input type="text" class="form-control" formControlName="lastName" [class.has-error]="isFieldInvalid('lastName')" placeholder="Doe">
+              @if (isFieldInvalid('lastName')) {
+                <span class="error-message">Last name is required.</span>
+              }
+            </div>
+          </div>
+
+          <div class="form-row">
+            <div class="form-group">
+              <label>Email Address</label>
+              <input type="email" class="form-control" formControlName="email" [class.has-error]="isFieldInvalid('email')" placeholder="john.doe@example.com" [readonly]="isEditMode()">
+              @if (isFieldInvalid('email')) {
+                <span class="error-message">Valid email is required.</span>
+              }
+            </div>
+            <div class="form-group">
+              <label>Phone Number</label>
+              <input type="text" class="form-control" formControlName="phoneNumber" [class.has-error]="isFieldInvalid('phoneNumber')" placeholder="+1 234 567 890">
+              @if (isFieldInvalid('phoneNumber')) {
+                <span class="error-message">Valid phone number is required.</span>
+              }
+            </div>
+          </div>
+
+          <div class="form-row">
+            <div class="form-group">
+              <label>Hire Date</label>
+              <input type="date" class="form-control" formControlName="hireDate" [class.has-error]="isFieldInvalid('hireDate')">
+              @if (isFieldInvalid('hireDate')) {
+                <span class="error-message">Hire date is required.</span>
+              }
+            </div>
+            <div class="form-group">
+              <label>Department</label>
+              <select class="form-control" formControlName="departmentId" [class.has-error]="isFieldInvalid('departmentId')">
+                <option value="" disabled selected>Select a department...</option>
+                @for (dept of departments(); track dept.id) {
+                  <option [value]="dept.id">{{ dept.name }}</option>
+                }
+              </select>
+              @if (isFieldInvalid('departmentId')) {
+                <span class="error-message">Please select a department.</span>
+              }
+            </div>
+          </div>
+
+          <div class="form-group toggle-group">
+            <label class="toggle-label">
+              <span class="toggle-text">Account Status (Active)</span>
+              <div class="toggle-switch">
+                <input type="checkbox" formControlName="isActive">
+                <span class="slider"></span>
+              </div>
+            </label>
+          </div>
+        </div>
+
+        <div class="modal-footer">
+          <button type="button" class="btn-secondary" (click)="closeModal()">Cancel</button>
+          <button type="submit" class="btn-primary" [disabled]="isSubmitting()">
+            @if (isSubmitting()) {
+              <span class="btn-spinner"></span>
+            }
+            {{ isEditMode() ? 'Save Changes' : 'Create Employee' }}
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+}
