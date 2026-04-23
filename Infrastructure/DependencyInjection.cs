@@ -24,7 +24,7 @@ public static class DependencyInjection
                 configuration.GetConnectionString("DefaultConnection")));
 
         // Repositories
-        services.AddScoped<IEmployeeRepository, EmployeeRepository>();
+
 
         // UnitOfWork
         services.AddScoped<IUnitOfWork, UnitOfWork>();
@@ -42,6 +42,11 @@ public static class DependencyInjection
         services.AddScoped<IEmployeeService, EmployeeService>();
         services.AddScoped<IDepartmentService, DepartmentService>();
         services.AddScoped<ILeaveRequestService, LeaveRequestService>();
+        services.AddScoped<IAttendanceService, AttendanceService>();
+        services.AddScoped<ISalaryService, SalaryService>();
+        services.AddScoped<INotificationService, NotificationService>();
+        services.AddScoped<IDashboardService, DashboardService>();
+        services.AddScoped<IEmailService, EmailService>();
 
         return services;
     }

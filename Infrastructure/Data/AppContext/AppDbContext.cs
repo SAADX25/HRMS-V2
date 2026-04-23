@@ -19,6 +19,7 @@ public class AppDbContext : DbContext
     public DbSet<LeaveRequest> LeaveRequests { get; set; }
     public DbSet<Attendance> Attendances { get; set; } 
     public DbSet<Salary> Salaries { get; set; } 
+    public DbSet<Notification> Notifications { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -65,6 +66,12 @@ public class AppDbContext : DbContext
             .WithMany(e => e.Salaries)
             .HasForeignKey(s => s.EmployeeId)
             .OnDelete(DeleteBehavior.Restrict);
+
+        modelBuilder.Entity<Notification>()
+            .HasOne(n => n.User)
+            .WithMany()
+            .HasForeignKey(n => n.UserId)
+            .OnDelete(DeleteBehavior.Cascade);
 
         // Seed Admin User (password: Admin123 — BCrypt hashed)
         modelBuilder.Entity<User>().HasData(new User

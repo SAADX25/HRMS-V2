@@ -7,6 +7,9 @@
 using Application.DTOs.Employee;
 using Application.DTOs.Departments;
 using Application.DTOs.LeaveRequests;
+using Application.DTOs.Attendance;
+using Application.DTOs.Salary;
+using Application.DTOs.Notification;
 using AutoMapper;
 using Domain.Entities;
 
@@ -54,5 +57,19 @@ public class MappingProfile : Profile
         // LeaveRequest Mappings
         CreateMap<LeaveRequest, LeaveRequestDto>();
         CreateMap<CreateLeaveRequestDto, LeaveRequest>();
+
+        // Attendance Mappings
+        CreateMap<Attendance, AttendanceDto>();
+        CreateMap<CreateAttendanceDto, Attendance>();
+        CreateMap<UpdateAttendanceDto, Attendance>()
+            .ForAllMembers(opt => opt.Condition((src, dest, srcMember) => srcMember != null));
+
+        // Salary Mappings
+        CreateMap<Salary, SalaryDto>();
+        CreateMap<CreateSalaryDto, Salary>();
+
+        // Notification Mappings
+        CreateMap<Notification, NotificationDto>();
+        CreateMap<CreateNotificationDto, Notification>();
     }
 }

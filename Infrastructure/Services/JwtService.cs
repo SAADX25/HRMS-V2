@@ -1,4 +1,4 @@
-﻿using System.IdentityModel.Tokens.Jwt;
+using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
 using Application.Interfaces;
@@ -6,7 +6,7 @@ using Domain.Entities;
 using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
 
-namespace Application.Services.Implementations
+namespace Infrastructure.Services
 {
     public class JwtService(IConfiguration config) : IJwtService
     {
@@ -37,11 +37,8 @@ namespace Application.Services.Implementations
             return new JwtSecurityTokenHandler().WriteToken(token);
         }
 
-
-
         public DateTime GetExpiration() =>
        DateTime.UtcNow.AddHours(
            double.Parse(config["Jwt:ExpiryHours"] ?? "24"));
-
     }
 }
