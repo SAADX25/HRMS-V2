@@ -5,6 +5,7 @@ using Domain.Interfaces;
 using Infrastructure.Data;
 using Infrastructure.Data.Repositories;
 using Infrastructure.Repositories;
+using Infrastructure.Services;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -25,9 +26,11 @@ public static class DependencyInjection
 
         // Repositories
 
-
         // UnitOfWork
         services.AddScoped<IUnitOfWork, UnitOfWork>();
+
+        // Infrastructure Services
+        services.AddScoped<IEmailService, EmailService>();
 
         return services;
     }
@@ -46,7 +49,6 @@ public static class DependencyInjection
         services.AddScoped<ISalaryService, SalaryService>();
         services.AddScoped<INotificationService, NotificationService>();
         services.AddScoped<IDashboardService, DashboardService>();
-        services.AddScoped<IEmailService, EmailService>();
 
         return services;
     }

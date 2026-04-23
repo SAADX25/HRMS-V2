@@ -11,6 +11,8 @@ using Microsoft.OpenApi.Models;
 using Microsoft.OpenApi.Any;
 using Swashbuckle.AspNetCore.SwaggerGen;
 using Application.DTOs.Auth;
+using HRMS_API.Middleware;
+using HRMS_API.Filters;
 
 
 var builder = WebApplication.CreateBuilder(args);
@@ -31,7 +33,11 @@ builder.Services.AddSwaggerGen(c =>
     c.SchemaFilter<RegisterDtoSchemaFilter>();
 });
 
-builder.Services.AddControllers()
+builder.Services.AddControllers(options =>
+    {
+        // Apply ValidateModelAttribute globally to all controllers
+        options.Filters.Add<ValidateModelAttribute>();
+    })
     .AddJsonOptions(options =>
     {
         // This makes JSON serialization handle Enums as strings (e.g. "Admin") instead of numbers
@@ -64,6 +70,9 @@ builder.Services.AddInfrastructure(builder.Configuration);
 builder.Services.AddApplication();
 
 var app = builder.Build();
+
+// Global exception handler — must be first in the pipeline
+app.UseMiddleware<ExceptionHandlingMiddleware>();
 
 if (app.Environment.IsDevelopment())
 {
