@@ -1,4 +1,4 @@
-﻿namespace Domain.Entities;
+namespace Domain.Entities;
 
 public class Employee
 {
@@ -12,11 +12,11 @@ public class Employee
 
     // Foreign Keys
     public int DepartmentId { get; set; }
-    public int UserId { get; set; }
+    public int? UserId { get; set; }  // Nullable: employee may not have a login account yet
 
     // Navigation Properties
     public Department Department { get; set; } = null!;
-    public User User { get; set; } = null!;
+    public User? User { get; set; }  // Optional navigation
     public ICollection<Attendance> Attendances { get; set; } = new List<Attendance>();
     public ICollection<Salary> Salaries { get; set; } = new List<Salary>();
     public ICollection<LeaveRequest> LeaveRequests { get; set; } = new List<LeaveRequest>();
